@@ -5,9 +5,9 @@
 <title>MVC APP</title>
 
 <!-- as of ZIM 4.3.0 load createjs namespace first -->
-<script src="scripts/createjs-2015.11.26.min.js"></script>
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
 <script>var zon = true; // true for comments from zim code</script>
-<script src="scripts/zim_4.8.0.js"></script>
+<script src="https://d309knd7es5f10.cloudfront.net/zim_4.8.1.js"></script>
 <script src="scripts/view.js"></script>
 <script src="scripts/controller.js"></script>
 
@@ -31,12 +31,28 @@ frame.on("ready", function() {
 	var stageW = frame.width;
 	var stageH = frame.height;
 
-	var view = app.makeView(stage);
-	var control = app.makeController(stage, view);
+	var layoutManager = new zim.LayoutManager();
+
+	var view = app.makeView(stage, stageW, stageH, layoutManager);
+
+	// PAGES 
+	var pages = new zim.Pages({
+		holder:stage,
+		pages:[
+			{page: view.page1, swipe:[null,null, view.page2, view.page2]},
+			{page: view.page2, swipe:[null,null, view.page1, view.page1]}
+		],
+		transition:"slide",
+   		speed:1000
+	});
+	pages.addTo(stage);
 
 	frame.on("resize", function(){
-		view.layout.resize();
+		layoutManager.resize();
 	});
+
+	// CONTROLLER 
+	var control = app.makeController(stage, view, pages);
 
 
 	stage.update()
